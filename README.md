@@ -1,4 +1,4 @@
-# Metashell Project Documentation
+# Metashell
 
 ## Overview
 
@@ -37,7 +37,7 @@ You must have `zsh` and `bash` installed if you intend to run tests or switch be
 1. **Clone or Download the Project:**
 
     ```bash
-    git clone https://example.com/metashell.git
+    git clone https://github.com/araray/metashell.git
     cd metashell
     ```
 
@@ -180,7 +180,7 @@ The project comes with automated tests for both Bash and Zsh:
 2. From the project root directory:
 
     ```bash
-    ./run_tests.sh
+    ./tests/run_tests.sh
     ```
 
     This script:
@@ -223,5 +223,3 @@ If all tests pass, you’ll see a success message. If not, check the test output
      https://github.com/bats-core/bats-core
 - **ZUnit for Zsh Testing**:
      https://github.com/zunit-zsh/zunit
-
-This documentation, code structure, and testing strategy aim to provide a robust, maintainable, and extensible platform for enhancing your interactive shell environment with Metashell.
