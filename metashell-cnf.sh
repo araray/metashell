@@ -1,6 +1,4 @@
-#!/usr/bin/env bash
-
-# metashell-cnf.sh
+# Command Not Found handling module
 
 : "${METASHELL_RERUN_COMMAND_NOT_FOUND:=0}"
 

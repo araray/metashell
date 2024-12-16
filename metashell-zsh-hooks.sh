@@ -1,6 +1,5 @@
 #!/usr/bin/env zsh
 
-# metashell-zsh-hooks.sh
 # Zsh-specific hooking logic
 autoload -Uz add-zsh-hook
 
@@ -8,21 +7,26 @@ autoload -Uz add-zsh-hook
 
 zsh_preexec() {
     local current_command=$1
-    # Check forbidden commands
+    # Forbidden commands check
     for fc in ${(s: :)METASHELL_FORBIDDEN_COMMANDS}; do
         if [[ "$current_command" == "$fc" ]]; then
             echo "Aborting forbidden command: $fc"
-            # Abort the command if interactive and zle is active
             if [[ -o interactive && -n "$ZLE_LINE_TEXT" ]]; then
                 zle kill-buffer
             fi
             return 1
         fi
     done
+
     echo "Preexec: $current_command"
+    # Start per-command logging
+    metashell_start_command_logging "$current_command"
 }
 
 zsh_precmd() {
+    # Postexec
+    # Stop per-command logging
+    metashell_stop_command_logging
     echo "Postexec: last command finished"
 }
 

@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-# metashell-bash-hooks.sh
 
 : "${METASHELL_MERGE_PROMPT:=0}"
 : "${METASHELL_FORBIDDEN_COMMANDS:=forbidden_command}"
@@ -15,21 +14,22 @@ bash_preexec_hook() {
     for fc in $METASHELL_FORBIDDEN_COMMANDS; do
         if [[ "$current_command" == "$fc" ]]; then
             echo "Aborting forbidden command: $fc"
-            # Attempt to delete last history entry
+            # attempt to remove last history entry
             history -d $((HISTCMD-1)) 2>/dev/null
-            # Clear command by setting should_execute_command=0
             should_execute_command=false
             return
         fi
     done
     echo "Preexec: $current_command"
     should_execute_command=true
+    metashell_start_command_logging "$current_command"
 }
 
 bash_postexec_hook() {
     # executed after command runs (just before prompt)
     # only run if last command was allowed
     if [ "$should_execute_command" = true ]; then
+        metashell_stop_command_logging
         echo "Postexec: last command finished"
     fi
 }

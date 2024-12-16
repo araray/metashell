@@ -1,0 +1,53 @@
+#!/usr/bin/env zunit
+
+dir_base="/av/data/repos/metashell"
+
+# Ensure we are in zsh
+if [[ -z "$ZSH_VERSION" ]]; then
+    echo "Not running in zsh, skipping"
+    exit 0
+fi
+
+ZUNIT_TMPDIR=$(mktemp -d)
+METASHELL_LOG_DIR="$ZUNIT_TMPDIR/logs"
+mkdir -p "$METASHELL_LOG_DIR"
+METASHELL_FORBIDDEN_COMMANDS="forbidden_command"
+METASHELL_RERUN_COMMAND_NOT_FOUND=0
+av_var_shell="zsh"
+source "${dir_base}/metashell.sh"
+
+@before
+av_fn_metashell_toggle enable
+
+@after
+av_fn_metashell_toggle disable
+rm -rf "$ZUNIT_TMPDIR"
+
+@test "Zsh: Simple command execution" {
+    run ls
+    assert $status -eq 0
+}
+
+@test "Zsh: Forbidden command" {
+    run forbidden_command
+    assert $status -ne 0
+    assert grep -q "Aborting forbidden command" "$stdout"
+}
+
+@test "Zsh: Per-command logging" {
+    run echo "Hello"
+    assert $status -eq 0
+
+    # Check if logfile created
+    local logfile_count=$(ls "$METASHELL_LOG_DIR" | wc -l)
+    assert $logfile_count -gt 0
+
+    # Check output in logs
+    grep "Hello" "$METASHELL_LOG_DIR"/* || fail "Output not found in logs"
+}
+
+@test "Zsh: Command not found" {
+    run some_unknown_command
+    assert $status -eq 127
+    assert grep -q "command not found" "$stderr"
+}

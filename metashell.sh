@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
-# metashell.sh
+
 # Main entry point. Source this file in your interactive shell.
+
+#dir_base="$(dirname "$0")"
+dir_base="/av/data/repos/metashell"
 
 # Detect shell if av_var_shell is not set
 if [ -z "$av_var_shell" ]; then
@@ -15,14 +18,13 @@ if [ -z "$av_var_shell" ]; then
 fi
 
 # Source modules
-# Adjust paths as needed
-. "/path/to/metashell-logging.sh"
-. "/path/to/metashell-cnf.sh"
+source "${dir_base}/metashell-logging.sh"
+source "${dir_base}/metashell-cnf.sh"
 
 if [ "$av_var_shell" = "zsh" ]; then
-    . "/path/to/metashell-zsh-hooks.sh"
+    . "${dir_base}/metashell-zsh-hooks.sh"
 elif [ "$av_var_shell" = "bash" ]; then
-    . "/path/to/metashell-bash-hooks.sh"
+    . "${dir_base}/metashell-bash-hooks.sh"
 else
     echo "Unsupported shell: $av_var_shell"
     return 1
@@ -40,7 +42,9 @@ av_fn_metashell_toggle() {
     local action="$1"
     case "$action" in
         enable)
-            metashell_enable_logging
+            # For per-command logging, we no longer do a global enable here
+            # Logging starts per-command in hooks.
+            # We could still note that logging is conceptually enabled.
             if [ "$av_var_shell" = "zsh" ]; then
                 metashell_zsh_enable_hooks
                 metashell_zsh_cnf_enable
@@ -55,7 +59,6 @@ av_fn_metashell_toggle() {
             elif [ "$av_var_shell" = "bash" ]; then
                 metashell_bash_disable_hooks
             fi
-            metashell_disable_logging
             ;;
         *)
             echo "Invalid action: '$action'"
